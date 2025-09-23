@@ -15,6 +15,7 @@
   "dependencies": {
     "@types/echarts": "^4.4.6",
     "@types/webpack": "^4.41.12",
+    "@vue/cli-service": "^3.11.0",
     "area-data": "^5.0.6",
     "axios": "^0.19.0",
     "echarts": "^5.3.2",
@@ -48,7 +49,6 @@
     "@vue/cli-plugin-pwa": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",
     "@vue/cli-plugin-unit-jest": "^3.11.0",
-    "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "@vue/eslint-config-typescript": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.29",

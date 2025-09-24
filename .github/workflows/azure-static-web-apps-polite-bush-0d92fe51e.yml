@@ -2,12 +2,10 @@ name: Azure Static Web Apps CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build_and_deploy_job:
@@ -15,44 +13,34 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
-       id-token: write
-       contents: read
+      id-token: write
+      contents: read
+    env:
+      NODE_VERSION: '16'                    # 固定 Node 16，兼容你的老依赖
+      NPM_CONFIG_LEGACY_PEER_DEPS: 'true'   # 等价于 --legacy-peer-deps，避免 peer 冲突
+      NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
+
+      # 可选：显式设置 Node 版本（有些 runner 默认不是 16）
+      - name: Use Node.js 16
+        uses: actions/setup-node@v4
         with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
+          node-version: ${{ env.NODE_VERSION }}
+
+      # ⚠️ 移除了“Install OIDC Client ...”这步，不再在仓库根目录执行 npm install
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_POLITE_BUSH_0D92FE51E }}
-          action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist" # Built app content directory - optional
-          github_id_token: ${{ steps.idtoken.outputs.result }}
-          ###### End of Repository/Build Configurations ######
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          action: "close"
+          action: upload
+          app_location: "/"         # 确认这里就是含 package.json 的前端目录；否则改成你的子目录
+          api_location: ""
+          output_location: "dist"
+          github_id_token: ${{ steps.idtoken.outputs.result }} # 其实也可省略，action会处理 OIDC

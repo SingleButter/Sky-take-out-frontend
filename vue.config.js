@@ -43,6 +43,7 @@ module.exports = {
   },
   chainWebpack: (config) => {
     config.resolve.symlinks(true) // 修复热更新失效
+    config.resolve.alias.set('path', require.resolve('path-browserify'));
   },
   configureWebpack: {
     devtool: 'source-map'

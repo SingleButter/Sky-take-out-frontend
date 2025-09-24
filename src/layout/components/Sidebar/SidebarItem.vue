@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import path from 'path'
+import * as path from 'path-browserify'
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { UserModule } from '@/store/modules/user'
 import { Route, RouteConfig } from 'vue-router'
